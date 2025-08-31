@@ -93,8 +93,9 @@ dots.forEach((dot, index) => {
 // Auto-slide testimonials
 setInterval(nextSlide, 5000);
 
-// Chatbot functionality
+// Enhanced Chatbot functionality
 let isChatOpen = false;
+let isTyping = false;
 
 function toggleChat() {
     isChatOpen = !isChatOpen;
@@ -102,54 +103,180 @@ function toggleChat() {
     
     if (isChatOpen) {
         chatInput.focus();
+        // Add welcome message if it's the first time
+        if (chatbotMessages.children.length === 1) {
+            setTimeout(() => {
+                addTypingIndicator();
+                setTimeout(() => {
+                    removeTypingIndicator();
+                    addMessage("Welcome to Luxe Interiors! I'm here to help you create your dream space. What would you like to know about our services?", false);
+                }, 1500);
+            }, 500);
+        }
     }
 }
 
-function addMessage(message, isUser = false) {
-    const messageDiv = document.createElement('div');
-    messageDiv.className = `message ${isUser ? 'user-message' : 'bot-message'}`;
-    messageDiv.innerHTML = `<p>${message}</p>`;
-    chatbotMessages.appendChild(messageDiv);
+function addTypingIndicator() {
+    if (isTyping) return;
+    isTyping = true;
+    
+    const typingDiv = document.createElement('div');
+    typingDiv.className = 'message bot-message typing-indicator';
+    typingDiv.innerHTML = `
+        <div class="message-avatar">
+            <i class="fas fa-user-tie"></i>
+        </div>
+        <div class="message-content">
+            <div class="typing-dots">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+    `;
+    chatbotMessages.appendChild(typingDiv);
     chatbotMessages.scrollTop = chatbotMessages.scrollHeight;
 }
 
-function getBotResponse(userMessage) {
-    const responses = [
-        "Thank you for your message! Our team will get back to you within 24 hours.",
-        "I'd be happy to help you with your interior design needs. Could you tell me more about your project?",
-        "We offer a wide range of services including residential design, commercial design, and color consultation. What interests you most?",
-        "Our design process starts with a consultation to understand your vision. Would you like to schedule one?",
-        "We have over 15 years of experience creating beautiful spaces. What type of project are you considering?",
-        "Our portfolio showcases our latest work. You can view it on our website or I can send you specific examples."
-    ];
+function removeTypingIndicator() {
+    const typingIndicator = chatbotMessages.querySelector('.typing-indicator');
+    if (typingIndicator) {
+        typingIndicator.remove();
+    }
+    isTyping = false;
+}
+
+function addMessage(message, isUser = false, quickReplies = null) {
+    const messageDiv = document.createElement('div');
+    messageDiv.className = `message ${isUser ? 'user-message' : 'bot-message'}`;
     
-    // Simple keyword-based responses
+    if (isUser) {
+        messageDiv.innerHTML = `
+            <div class="message-content">
+                <p>${message}</p>
+            </div>
+            <div class="message-avatar">
+                <i class="fas fa-user"></i>
+            </div>
+        `;
+    } else {
+        let quickRepliesHTML = '';
+        if (quickReplies && quickReplies.length > 0) {
+            quickRepliesHTML = `
+                <div class="quick-replies">
+                    ${quickReplies.map(reply => `<button class="quick-reply" data-reply="${reply}">${reply}</button>`).join('')}
+                </div>
+            `;
+        }
+        
+        messageDiv.innerHTML = `
+            <div class="message-avatar">
+                <i class="fas fa-user-tie"></i>
+            </div>
+            <div class="message-content">
+                <p>${message}</p>
+                ${quickRepliesHTML}
+            </div>
+        `;
+    }
+    
+    chatbotMessages.appendChild(messageDiv);
+    chatbotMessages.scrollTop = chatbotMessages.scrollHeight;
+    
+    // Add event listeners to quick replies
+    if (quickReplies) {
+        const quickReplyButtons = messageDiv.querySelectorAll('.quick-reply');
+        quickReplyButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                const reply = button.getAttribute('data-reply');
+                addMessage(reply, true);
+                setTimeout(() => {
+                    const botResponse = getBotResponse(reply);
+                    addTypingIndicator();
+                    setTimeout(() => {
+                        removeTypingIndicator();
+                        addMessage(botResponse.message, false, botResponse.quickReplies);
+                    }, 1000 + Math.random() * 1000);
+                }, 500);
+            });
+        });
+    }
+}
+
+function getBotResponse(userMessage) {
     const lowerMessage = userMessage.toLowerCase();
     
-    if (lowerMessage.includes('price') || lowerMessage.includes('cost')) {
-        return "Our pricing varies based on project scope and requirements. I'd recommend scheduling a consultation for a detailed quote.";
-    } else if (lowerMessage.includes('service') || lowerMessage.includes('offer')) {
-        return "We offer residential design, commercial design, color consultation, lighting design, furniture selection, and project management services.";
-    } else if (lowerMessage.includes('contact') || lowerMessage.includes('call')) {
-        return "You can reach us at +1 (555) 123-4567 or email us at hello@luxeinteriors.com. We're available Monday-Friday, 9 AM-6 PM.";
-    } else if (lowerMessage.includes('portfolio') || lowerMessage.includes('work')) {
-        return "You can view our portfolio on our website. We have examples of residential, commercial, and hospitality projects.";
+    // Enhanced response system with quick replies
+    const responses = {
+        'services': {
+            message: "We offer a comprehensive range of interior design services: 🏠 Residential Design, 🏢 Commercial Design, 🎨 Color Consultation, 💡 Lighting Design, 🛋️ Furniture Selection, and 📋 Project Management. Which service interests you most?",
+            quickReplies: ['Residential Design', 'Commercial Design', 'Color Consultation', 'Tell me about pricing']
+        },
+        'pricing': {
+            message: "Our pricing is transparent and varies by project scope: 💰 Consultation: $299/session, 🏠 Room Design: $2,999/room, 🏘️ Full Home: $12,999/project. Would you like to schedule a consultation to get a personalized quote?",
+            quickReplies: ['Book Consultation', 'Tell me about services', 'View portfolio']
+        },
+        'consultation': {
+            message: "Great choice! Our consultations include a 2-hour design session, color palette recommendations, space planning advice, and a written design summary. When would you like to schedule?",
+            quickReplies: ['This week', 'Next week', 'Contact me later']
+        },
+        'portfolio': {
+            message: "Our portfolio showcases our finest work across residential and commercial projects. You can view it on our website, or I can tell you about specific project types. What interests you?",
+            quickReplies: ['Residential projects', 'Commercial projects', 'Luxury designs', 'Modern styles']
+        },
+        'contact': {
+            message: "You can reach us at: 📞 +1 (555) 123-4567, 📧 hello@luxeinteriors.com, or 📍 123 Design District, NY. We're available Mon-Fri 9AM-6PM EST. Would you like me to help you with anything specific?",
+            quickReplies: ['Book appointment', 'Send email', 'Call now']
+        },
+        'team': {
+            message: "Our expert team includes Sarah Johnson (Lead Designer), Michael Chen (Commercial Specialist), Emily Rodriguez (Color & Lighting Expert), and David Thompson (Project Manager). Each brings 10+ years of experience!",
+            quickReplies: ['Tell me about services', 'View portfolio', 'Book consultation']
+        },
+        'experience': {
+            message: "We have 15+ years of experience with 150+ projects completed and 100% client satisfaction. We've won 50+ awards for our exceptional work. Our expertise spans from luxury residential to commercial spaces.",
+            quickReplies: ['View portfolio', 'Read testimonials', 'Book consultation']
+        }
+    };
+    
+    // Keyword matching
+    if (lowerMessage.includes('service') || lowerMessage.includes('offer') || lowerMessage.includes('what do you do')) {
+        return responses.services;
+    } else if (lowerMessage.includes('price') || lowerMessage.includes('cost') || lowerMessage.includes('how much')) {
+        return responses.pricing;
+    } else if (lowerMessage.includes('consultation') || lowerMessage.includes('book') || lowerMessage.includes('schedule')) {
+        return responses.consultation;
+    } else if (lowerMessage.includes('portfolio') || lowerMessage.includes('work') || lowerMessage.includes('projects')) {
+        return responses.portfolio;
+    } else if (lowerMessage.includes('contact') || lowerMessage.includes('call') || lowerMessage.includes('email') || lowerMessage.includes('phone')) {
+        return responses.contact;
+    } else if (lowerMessage.includes('team') || lowerMessage.includes('designer') || lowerMessage.includes('who')) {
+        return responses.team;
+    } else if (lowerMessage.includes('experience') || lowerMessage.includes('years') || lowerMessage.includes('awards')) {
+        return responses.experience;
     } else {
-        return responses[Math.floor(Math.random() * responses.length)];
+        // Default response with suggestions
+        return {
+            message: "I'd be happy to help you with your interior design needs! What would you like to know about?",
+            quickReplies: ['Tell me about services', 'What are your prices?', 'View portfolio', 'Book consultation']
+        };
     }
 }
 
 function sendChatMessage() {
     const message = chatInput.value.trim();
-    if (message) {
+    if (message && !isTyping) {
         addMessage(message, true);
         chatInput.value = '';
         
         // Simulate bot thinking
         setTimeout(() => {
-            const botResponse = getBotResponse(message);
-            addMessage(botResponse, false);
-        }, 1000);
+            addTypingIndicator();
+            setTimeout(() => {
+                removeTypingIndicator();
+                const botResponse = getBotResponse(message);
+                addMessage(botResponse.message, false, botResponse.quickReplies);
+            }, 1000 + Math.random() * 1000);
+        }, 500);
     }
 }
 
@@ -164,6 +291,31 @@ chatInput.addEventListener('keypress', (e) => {
     }
 });
 
+// Portfolio filtering
+const filterButtons = document.querySelectorAll('.filter-btn');
+const portfolioItems = document.querySelectorAll('.portfolio-item');
+
+filterButtons.forEach(button => {
+    button.addEventListener('click', () => {
+        const filter = button.getAttribute('data-filter');
+        
+        // Update active button
+        filterButtons.forEach(btn => btn.classList.remove('active'));
+        button.classList.add('active');
+        
+        // Filter items
+        portfolioItems.forEach(item => {
+            const categories = item.getAttribute('data-category');
+            if (filter === 'all' || categories.includes(filter)) {
+                item.style.display = 'block';
+                item.style.animation = 'fadeInUp 0.6s ease';
+            } else {
+                item.style.display = 'none';
+            }
+        });
+    });
+});
+
 // Contact form handling
 contactForm.addEventListener('submit', (e) => {
     e.preventDefault();
@@ -171,11 +323,14 @@ contactForm.addEventListener('submit', (e) => {
     const formData = new FormData(contactForm);
     const name = formData.get('name');
     const email = formData.get('email');
+    const phone = formData.get('phone');
+    const service = formData.get('service');
+    const budget = formData.get('budget');
     const message = formData.get('message');
     
     // Simple validation
-    if (!name || !email || !message) {
-        alert('Please fill in all fields.');
+    if (!name || !email || !service || !message) {
+        showNotification('Please fill in all required fields.', 'error');
         return;
     }
     
@@ -187,12 +342,39 @@ contactForm.addEventListener('submit', (e) => {
     submitBtn.disabled = true;
     
     setTimeout(() => {
-        alert('Thank you for your message! We will get back to you soon.');
+        showNotification('Thank you for your message! We will get back to you within 24 hours.', 'success');
         contactForm.reset();
         submitBtn.textContent = originalText;
         submitBtn.disabled = false;
     }, 2000);
 });
+
+// Notification system
+function showNotification(message, type = 'info') {
+    const notification = document.createElement('div');
+    notification.className = `notification ${type}`;
+    notification.innerHTML = `
+        <div class="notification-content">
+            <i class="fas ${type === 'success' ? 'fa-check-circle' : type === 'error' ? 'fa-exclamation-circle' : 'fa-info-circle'}"></i>
+            <span>${message}</span>
+        </div>
+    `;
+    
+    document.body.appendChild(notification);
+    
+    // Animate in
+    setTimeout(() => {
+        notification.classList.add('show');
+    }, 100);
+    
+    // Remove after 5 seconds
+    setTimeout(() => {
+        notification.classList.remove('show');
+        setTimeout(() => {
+            notification.remove();
+        }, 300);
+    }, 5000);
+}
 
 // Scroll animations
 const observerOptions = {
@@ -210,7 +392,7 @@ const observer = new IntersectionObserver((entries) => {
 
 // Add fade-in class to elements and observe them
 document.addEventListener('DOMContentLoaded', () => {
-    const elementsToAnimate = document.querySelectorAll('.service-card, .portfolio-item, .about-content, .contact-content');
+    const elementsToAnimate = document.querySelectorAll('.service-card, .portfolio-item, .about-content, .contact-content, .pricing-card, .team-member');
     
     elementsToAnimate.forEach(el => {
         el.classList.add('fade-in');
@@ -236,33 +418,38 @@ if (newsletterForm) {
         const email = newsletterForm.querySelector('input[type="email"]').value;
         
         if (email) {
-            alert('Thank you for subscribing to our newsletter!');
+            showNotification('Thank you for subscribing to our newsletter!', 'success');
             newsletterForm.reset();
         } else {
-            alert('Please enter a valid email address.');
+            showNotification('Please enter a valid email address.', 'error');
         }
     });
 }
 
 // CTA button functionality
-const ctaButton = document.querySelector('.cta-button');
-if (ctaButton) {
-    ctaButton.addEventListener('click', () => {
-        const contactSection = document.querySelector('#contact');
-        if (contactSection) {
-            contactSection.scrollIntoView({ behavior: 'smooth' });
+const ctaButtons = document.querySelectorAll('.cta-button');
+ctaButtons.forEach(button => {
+    button.addEventListener('click', () => {
+        if (button.textContent.includes('Portfolio')) {
+            const portfolioSection = document.querySelector('#portfolio');
+            if (portfolioSection) {
+                portfolioSection.scrollIntoView({ behavior: 'smooth' });
+            }
+        } else {
+            const contactSection = document.querySelector('#contact');
+            if (contactSection) {
+                contactSection.scrollIntoView({ behavior: 'smooth' });
+            }
         }
     });
-}
+});
 
 // Portfolio item click handlers
-const portfolioItems = document.querySelectorAll('.portfolio-item');
 portfolioItems.forEach(item => {
     item.addEventListener('click', () => {
-        // You can add lightbox functionality here
         const overlay = item.querySelector('.portfolio-overlay');
         const title = overlay.querySelector('h3').textContent;
-        alert(`Viewing: ${title}`);
+        showNotification(`Viewing: ${title}`, 'info');
     });
 });
 
@@ -271,9 +458,26 @@ const serviceCards = document.querySelectorAll('.service-card');
 serviceCards.forEach(card => {
     card.addEventListener('click', () => {
         const title = card.querySelector('h3').textContent;
-        // You can add modal or navigation functionality here
         console.log(`Service selected: ${title}`);
     });
+});
+
+// Pricing card click handlers
+const pricingCards = document.querySelectorAll('.pricing-card');
+pricingCards.forEach(card => {
+    const button = card.querySelector('.pricing-btn');
+    if (button) {
+        button.addEventListener('click', () => {
+            const plan = card.querySelector('h3').textContent;
+            showNotification(`Selected plan: ${plan}. Redirecting to contact form...`, 'success');
+            setTimeout(() => {
+                const contactSection = document.querySelector('#contact');
+                if (contactSection) {
+                    contactSection.scrollIntoView({ behavior: 'smooth' });
+                }
+            }, 1000);
+        });
+    }
 });
 
 // Smooth scroll for all internal links
@@ -299,7 +503,7 @@ window.addEventListener('load', () => {
 // Add some interactive hover effects
 document.addEventListener('DOMContentLoaded', () => {
     // Add hover effects to service cards
-    const cards = document.querySelectorAll('.service-card, .portfolio-item');
+    const cards = document.querySelectorAll('.service-card, .portfolio-item, .pricing-card, .team-member');
     cards.forEach(card => {
         card.addEventListener('mouseenter', () => {
             card.style.transform = 'translateY(-10px) scale(1.02)';
@@ -320,7 +524,7 @@ const createScrollProgress = () => {
         left: 0;
         width: 0%;
         height: 3px;
-        background: linear-gradient(90deg, var(--primary-gold), var(--secondary-gold));
+        background: var(--gradient-gold);
         z-index: 9999;
         transition: width 0.1s ease;
     `;
@@ -412,5 +616,90 @@ document.addEventListener('DOMContentLoaded', () => {
     setTimeout(() => {
         document.body.classList.add('animate-in');
     }, 100);
+    
+    // Add CSS for notifications
+    const notificationStyles = document.createElement('style');
+    notificationStyles.textContent = `
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.15);
+            padding: 1rem 1.5rem;
+            transform: translateX(400px);
+            transition: transform 0.3s ease;
+            z-index: 10000;
+            max-width: 300px;
+        }
+        
+        .notification.show {
+            transform: translateX(0);
+        }
+        
+        .notification.success {
+            border-left: 4px solid #28a745;
+        }
+        
+        .notification.error {
+            border-left: 4px solid #dc3545;
+        }
+        
+        .notification.info {
+            border-left: 4px solid #17a2b8;
+        }
+        
+        .notification-content {
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+        }
+        
+        .notification-content i {
+            font-size: 1.2rem;
+        }
+        
+        .notification.success .notification-content i {
+            color: #28a745;
+        }
+        
+        .notification.error .notification-content i {
+            color: #dc3545;
+        }
+        
+        .notification.info .notification-content i {
+            color: #17a2b8;
+        }
+        
+        .typing-dots {
+            display: flex;
+            gap: 4px;
+            padding: 1rem;
+        }
+        
+        .typing-dots span {
+            width: 8px;
+            height: 8px;
+            background: var(--primary-gold);
+            border-radius: 50%;
+            animation: typing 1.4s infinite ease-in-out;
+        }
+        
+        .typing-dots span:nth-child(1) { animation-delay: -0.32s; }
+        .typing-dots span:nth-child(2) { animation-delay: -0.16s; }
+        
+        @keyframes typing {
+            0%, 80%, 100% {
+                transform: scale(0.8);
+                opacity: 0.5;
+            }
+            40% {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+    `;
+    document.head.appendChild(notificationStyles);
 });
 
