@@ -574,6 +574,9 @@
                             <h4>Call Us</h4>
                             <p>+1 (555) 123-4567</p>
                             <span class="contact-note">Mon-Fri: 9AM-6PM EST</span>
+                            <button onclick="openWhatsApp('Hi! I\'d like to discuss your interior design services.')" class="whatsapp-btn">
+                                <i class="fab fa-whatsapp"></i> WhatsApp
+                            </button>
                         </div>
                     </div>
                     <div class="contact-item">
@@ -628,6 +631,22 @@
                         </div>
                         <div class="form-group">
                             <textarea id="message" name="message" placeholder="Tell us about your project and vision..." rows="5" required></textarea>
+                        </div>
+                        <div class="form-group callback-request">
+                            <label class="checkbox-label">
+                                <input type="checkbox" id="callback-request" name="callback-request">
+                                <span class="checkmark"></span>
+                                Request a callback (We'll call you back within 24 hours)
+                            </label>
+                        </div>
+                        <div class="form-group preferred-time" id="preferred-time-group" style="display: none;">
+                            <select id="preferred-time" name="preferred-time">
+                                <option value="">Select Preferred Call Time</option>
+                                <option value="morning">Morning (9AM - 12PM)</option>
+                                <option value="afternoon">Afternoon (12PM - 3PM)</option>
+                                <option value="evening">Evening (3PM - 6PM)</option>
+                                <option value="flexible">Flexible - Any time</option>
+                            </select>
                         </div>
                         <button type="submit" class="submit-btn">Send Message</button>
                     </form>
@@ -694,6 +713,9 @@
                         <a href="#">Privacy Policy</a>
                         <a href="#">Terms of Service</a>
                         <a href="#">Cookie Policy</a>
+                        <a href="admin.html" target="_blank">Admin Panel</a>
+                        <button onclick="testNotification()" style="background: none; border: none; color: var(--primary-gold); cursor: pointer; text-decoration: underline; font-size: inherit;">Test Notification</button> | 
+                        <button onclick="testCallbackRequest()" style="background: none; border: none; color: var(--primary-gold); cursor: pointer; text-decoration: underline; font-size: inherit;">Test Callback</button>
                     </div>
                 </div>
             </div>

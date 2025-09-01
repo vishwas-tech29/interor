@@ -1,71 +1,137 @@
-// DOM Elements
-const navbar = document.getElementById('navbar');
-const hamburger = document.getElementById('hamburger');
-const navMenu = document.getElementById('nav-menu');
-const navLinks = document.querySelectorAll('.nav-link');
-const testimonialTrack = document.getElementById('testimonial-track');
-const prevBtn = document.getElementById('prev-btn');
-const nextBtn = document.getElementById('next-btn');
-const dots = document.querySelectorAll('.dot');
-const chatbotButton = document.getElementById('chatbot-button');
-const chatbotBox = document.getElementById('chatbot-box');
-const closeChat = document.getElementById('close-chat');
-const chatInput = document.getElementById('chat-input');
-const sendMessage = document.getElementById('send-message');
-const chatbotMessages = document.getElementById('chatbot-messages');
-const contactForm = document.getElementById('contact-form');
+// DOM Elements with error handling
+let navbar, hamburger, navMenu, navLinks, testimonialTrack, prevBtn, nextBtn, dots;
+let chatbotButton, chatbotBox, closeChat, chatInput, sendMessage, chatbotMessages, contactForm;
 
-// Navbar scroll effect
-window.addEventListener('scroll', () => {
-    if (window.scrollY > 100) {
-        navbar.classList.add('scrolled');
-    } else {
-        navbar.classList.remove('scrolled');
-    }
-});
-
-// Mobile menu toggle
-hamburger.addEventListener('click', () => {
-    hamburger.classList.toggle('active');
-    navMenu.classList.toggle('active');
-});
-
-// Close mobile menu when clicking on a link
-navLinks.forEach(link => {
-    link.addEventListener('click', () => {
-        hamburger.classList.remove('active');
-        navMenu.classList.remove('active');
-    });
-});
-
-// Smooth scrolling for navigation links
-navLinks.forEach(link => {
-    link.addEventListener('click', (e) => {
-        e.preventDefault();
-        const targetId = link.getAttribute('href');
-        const targetSection = document.querySelector(targetId);
+// Initialize DOM elements with error handling
+function initializeDOMElements() {
+    try {
+        navbar = document.getElementById('navbar');
+        hamburger = document.getElementById('hamburger');
+        navMenu = document.getElementById('nav-menu');
+        navLinks = document.querySelectorAll('.nav-link');
+        testimonialTrack = document.getElementById('testimonial-track');
+        prevBtn = document.getElementById('prev-btn');
+        nextBtn = document.getElementById('next-btn');
+        dots = document.querySelectorAll('.dot');
+        chatbotButton = document.getElementById('chatbot-button');
+        chatbotBox = document.getElementById('chatbot-box');
+        closeChat = document.getElementById('close-chat');
+        chatInput = document.getElementById('chat-input');
+        sendMessage = document.getElementById('send-message');
+        chatbotMessages = document.getElementById('chatbot-messages');
+        contactForm = document.getElementById('contact-form');
         
-        if (targetSection) {
-            const offsetTop = targetSection.offsetTop - 80; // Account for fixed navbar
-            window.scrollTo({
-                top: offsetTop,
-                behavior: 'smooth'
-            });
+        console.log('DOM elements initialized successfully');
+        return true;
+    } catch (error) {
+        console.error('Error initializing DOM elements:', error);
+        return false;
+    }
+}
+
+// Navbar scroll effect with error handling
+function setupNavbarScroll() {
+    if (!navbar) {
+        console.warn('Navbar element not found');
+        return;
+    }
+    
+    window.addEventListener('scroll', () => {
+        try {
+            if (window.scrollY > 100) {
+                navbar.classList.add('scrolled');
+            } else {
+                navbar.classList.remove('scrolled');
+            }
+        } catch (error) {
+            console.error('Error in navbar scroll effect:', error);
         }
     });
-});
+}
+
+// Mobile menu toggle with error handling
+function setupMobileMenu() {
+    if (!hamburger || !navMenu) {
+        console.warn('Hamburger or nav menu elements not found');
+        return;
+    }
+    
+    hamburger.addEventListener('click', () => {
+        try {
+            hamburger.classList.toggle('active');
+            navMenu.classList.toggle('active');
+        } catch (error) {
+            console.error('Error toggling mobile menu:', error);
+        }
+    });
+}
+
+// Close mobile menu when clicking on a link
+function setupNavLinks() {
+    if (!navLinks || navLinks.length === 0) {
+        console.warn('No nav links found');
+        return;
+    }
+    
+    navLinks.forEach(link => {
+        link.addEventListener('click', () => {
+            try {
+                if (hamburger) hamburger.classList.remove('active');
+                if (navMenu) navMenu.classList.remove('active');
+            } catch (error) {
+                console.error('Error closing mobile menu:', error);
+            }
+        });
+    });
+}
+
+// Smooth scrolling for navigation links
+function setupSmoothScrolling() {
+    if (!navLinks || navLinks.length === 0) {
+        console.warn('No nav links found for smooth scrolling');
+        return;
+    }
+    
+    navLinks.forEach(link => {
+        link.addEventListener('click', (e) => {
+            try {
+                e.preventDefault();
+                const targetId = link.getAttribute('href');
+                const targetSection = document.querySelector(targetId);
+                
+                if (targetSection) {
+                    const offsetTop = targetSection.offsetTop - 80; // Account for fixed navbar
+                    window.scrollTo({
+                        top: offsetTop,
+                        behavior: 'smooth'
+                    });
+                }
+            } catch (error) {
+                console.error('Error in smooth scrolling:', error);
+            }
+        });
+    });
+}
 
 // Testimonials Slider
 let currentSlide = 0;
 const totalSlides = document.querySelectorAll('.testimonial-slide').length;
 
 function updateSlider() {
-    testimonialTrack.style.transform = `translateX(-${currentSlide * 100}%)`;
-    
-    // Update dots
-    dots.forEach((dot, index) => {
-        dot.classList.toggle('active', index === currentSlide);
-    });
+    try {
+        if (testimonialTrack) {
+            testimonialTrack.style.transform = `translateX(-${currentSlide * 100}%)`;
+        }
+        
+        // Update dots
+        if (dots && dots.length > 0) {
+            dots.forEach((dot, index) => {
+                dot.classList.toggle('active', index === currentSlide);
+            });
+        }
+    } catch (error) {
+        console.error('Error updating slider:', error);
+    }
 }
 
 function nextSlide() {
@@ -79,16 +145,26 @@ function prevSlide() {
 }
 
 // Event listeners for slider controls
-nextBtn.addEventListener('click', nextSlide);
-prevBtn.addEventListener('click', prevSlide);
+if (nextBtn) {
+    nextBtn.addEventListener('click', nextSlide);
+}
+if (prevBtn) {
+    prevBtn.addEventListener('click', prevSlide);
+}
 
 // Dot navigation
-dots.forEach((dot, index) => {
-    dot.addEventListener('click', () => {
-        currentSlide = index;
-        updateSlider();
+if (dots && dots.length > 0) {
+    dots.forEach((dot, index) => {
+        dot.addEventListener('click', () => {
+            try {
+                currentSlide = index;
+                updateSlider();
+            } catch (error) {
+                console.error('Error in dot navigation:', error);
+            }
+        });
     });
-});
+}
 
 // Auto-slide testimonials
 setInterval(nextSlide, 5000);
@@ -96,23 +172,53 @@ setInterval(nextSlide, 5000);
 // Enhanced Chatbot functionality
 let isChatOpen = false;
 let isTyping = false;
+let conversationHistory = [];
+let adminNotifications = [];
+
+// Admin panel integration
+function notifyAdmin(type, title, message, data = {}) {
+    const notification = {
+        id: Date.now(),
+        type: type,
+        title: title,
+        message: message,
+        time: 'Just now',
+        priority: 'medium',
+        data: data
+    };
+    
+    // Store in localStorage for admin panel access
+    adminNotifications.push(notification);
+    localStorage.setItem('adminNotifications', JSON.stringify(adminNotifications));
+    
+    // In a real app, this would send to server
+    console.log('Admin notification created:', notification);
+    console.log('Total notifications in localStorage:', adminNotifications.length);
+    console.log('localStorage content:', localStorage.getItem('adminNotifications'));
+}
 
 function toggleChat() {
-    isChatOpen = !isChatOpen;
-    chatbotBox.classList.toggle('active', isChatOpen);
-    
-    if (isChatOpen) {
-        chatInput.focus();
-        // Add welcome message if it's the first time
-        if (chatbotMessages.children.length === 1) {
-            setTimeout(() => {
-                addTypingIndicator();
-                setTimeout(() => {
-                    removeTypingIndicator();
-                    addMessage("Welcome to Luxe Interiors! I'm here to help you create your dream space. What would you like to know about our services?", false);
-                }, 1500);
-            }, 500);
+    try {
+        isChatOpen = !isChatOpen;
+        if (chatbotBox) {
+            chatbotBox.classList.toggle('active', isChatOpen);
         }
+        
+        if (isChatOpen) {
+            if (chatInput) chatInput.focus();
+            // Add welcome message if it's the first time
+            if (chatbotMessages && chatbotMessages.children.length === 1) {
+                setTimeout(() => {
+                    addTypingIndicator();
+                    setTimeout(() => {
+                        removeTypingIndicator();
+                        addMessage("Welcome to Luxe Interiors! I'm here to help you create your dream space. What would you like to know about our services?", false, ['Tell me about your services', 'What are your prices?', 'Book a consultation']);
+                    }, 1500);
+                }, 500);
+            }
+        }
+    } catch (error) {
+        console.error('Error toggling chat:', error);
     }
 }
 
@@ -153,7 +259,7 @@ function addMessage(message, isUser = false, quickReplies = null) {
     if (isUser) {
         messageDiv.innerHTML = `
             <div class="message-content">
-                <p>${message}</p>
+                <p>${escapeHtml(message)}</p>
             </div>
             <div class="message-avatar">
                 <i class="fas fa-user"></i>
@@ -164,7 +270,7 @@ function addMessage(message, isUser = false, quickReplies = null) {
         if (quickReplies && quickReplies.length > 0) {
             quickRepliesHTML = `
                 <div class="quick-replies">
-                    ${quickReplies.map(reply => `<button class="quick-reply" data-reply="${reply}">${reply}</button>`).join('')}
+                    ${quickReplies.map(reply => `<button class="quick-reply" data-reply="${escapeHtml(reply)}">${escapeHtml(reply)}</button>`).join('')}
                 </div>
             `;
         }
@@ -184,12 +290,18 @@ function addMessage(message, isUser = false, quickReplies = null) {
     chatbotMessages.scrollTop = chatbotMessages.scrollHeight;
     
     // Add event listeners to quick replies
-    if (quickReplies) {
+    if (quickReplies && quickReplies.length > 0) {
         const quickReplyButtons = messageDiv.querySelectorAll('.quick-reply');
         quickReplyButtons.forEach(button => {
-            button.addEventListener('click', () => {
+            button.addEventListener('click', (e) => {
+                e.preventDefault();
                 const reply = button.getAttribute('data-reply');
+                
+                // Disable all quick reply buttons to prevent multiple clicks
+                quickReplyButtons.forEach(btn => btn.disabled = true);
+                
                 addMessage(reply, true);
+                
                 setTimeout(() => {
                     const botResponse = getBotResponse(reply);
                     addTypingIndicator();
@@ -201,6 +313,20 @@ function addMessage(message, isUser = false, quickReplies = null) {
             });
         });
     }
+    
+    // Store conversation history
+    conversationHistory.push({
+        message: message,
+        isUser: isUser,
+        timestamp: new Date()
+    });
+}
+
+// Helper function to escape HTML
+function escapeHtml(text) {
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
 }
 
 function getBotResponse(userMessage) {
@@ -235,11 +361,65 @@ function getBotResponse(userMessage) {
         'experience': {
             message: "We have 15+ years of experience with 150+ projects completed and 100% client satisfaction. We've won 50+ awards for our exceptional work. Our expertise spans from luxury residential to commercial spaces.",
             quickReplies: ['View portfolio', 'Read testimonials', 'Book consultation']
+        },
+        'residential': {
+            message: "🏠 Our residential design services include: Complete home makeovers, Room-by-room design, Kitchen & bathroom renovations, Custom furniture design, and Smart home integration. We work with all budgets and styles!",
+            quickReplies: ['Get a quote', 'View residential portfolio', 'Book consultation']
+        },
+        'commercial': {
+            message: "🏢 Our commercial design services cover: Office spaces, Retail stores, Restaurants & cafes, Hotels & hospitality, and Healthcare facilities. We focus on functionality, brand identity, and employee satisfaction.",
+            quickReplies: ['Get a quote', 'View commercial portfolio', 'Book consultation']
+        },
+        'color': {
+            message: "🎨 Our color consultation includes: Color psychology analysis, Custom color palettes, Paint selection, Material coordination, and Lighting considerations. We help create the perfect mood for your space!",
+            quickReplies: ['Book consultation', 'Tell me about services', 'View portfolio']
+        },
+        'this week': {
+            message: "Perfect! I can help you schedule a consultation this week. We have availability on Tuesday (2PM), Thursday (10AM), and Friday (3PM). Which time works best for you?",
+            quickReplies: ['Tuesday 2PM', 'Thursday 10AM', 'Friday 3PM', 'Call me to arrange']
+        },
+        'next week': {
+            message: "Great! Next week we have openings on Monday (11AM), Wednesday (1PM), and Saturday (10AM). Would you like to book one of these slots?",
+            quickReplies: ['Monday 11AM', 'Wednesday 1PM', 'Saturday 10AM', 'Call me to arrange']
+        },
+        'residential projects': {
+            message: "🏠 Our residential projects include: Modern apartments, Luxury homes, Family residences, and Vacation properties. Each project is tailored to the client's lifestyle and preferences.",
+            quickReplies: ['View more projects', 'Get a quote', 'Book consultation']
+        },
+        'commercial projects': {
+            message: "🏢 Our commercial projects include: Corporate offices, Boutique hotels, Retail spaces, and Healthcare facilities. We focus on creating functional, beautiful spaces that enhance business success.",
+            quickReplies: ['View more projects', 'Get a quote', 'Book consultation']
+        },
+        'luxury designs': {
+            message: "✨ Our luxury designs feature: Premium materials, Custom furniture, Smart home technology, and Attention to every detail. We create spaces that reflect sophistication and elegance.",
+            quickReplies: ['View luxury portfolio', 'Get a quote', 'Book consultation']
+        },
+        'modern styles': {
+            message: "🔄 Our modern designs emphasize: Clean lines, Minimalist aesthetics, Functional spaces, and Sustainable materials. We create contemporary spaces that are both beautiful and practical.",
+            quickReplies: ['View modern portfolio', 'Get a quote', 'Book consultation']
         }
     };
     
-    // Keyword matching
-    if (lowerMessage.includes('service') || lowerMessage.includes('offer') || lowerMessage.includes('what do you do')) {
+    // Enhanced keyword matching with better context
+    if (lowerMessage.includes('residential') || lowerMessage.includes('home') || lowerMessage.includes('house')) {
+        return responses.residential;
+    } else if (lowerMessage.includes('commercial') || lowerMessage.includes('office') || lowerMessage.includes('business')) {
+        return responses.commercial;
+    } else if (lowerMessage.includes('color') || lowerMessage.includes('palette') || lowerMessage.includes('paint')) {
+        return responses.color;
+    } else if (lowerMessage.includes('this week') || lowerMessage.includes('today') || lowerMessage.includes('soon')) {
+        return responses['this week'];
+    } else if (lowerMessage.includes('next week') || lowerMessage.includes('later')) {
+        return responses['next week'];
+    } else if (lowerMessage.includes('residential projects') || lowerMessage.includes('home projects')) {
+        return responses['residential projects'];
+    } else if (lowerMessage.includes('commercial projects') || lowerMessage.includes('business projects')) {
+        return responses['commercial projects'];
+    } else if (lowerMessage.includes('luxury') || lowerMessage.includes('premium') || lowerMessage.includes('high-end')) {
+        return responses['luxury designs'];
+    } else if (lowerMessage.includes('modern') || lowerMessage.includes('contemporary') || lowerMessage.includes('minimalist')) {
+        return responses['modern styles'];
+    } else if (lowerMessage.includes('service') || lowerMessage.includes('offer') || lowerMessage.includes('what do you do')) {
         return responses.services;
     } else if (lowerMessage.includes('price') || lowerMessage.includes('cost') || lowerMessage.includes('how much')) {
         return responses.pricing;
@@ -264,31 +444,106 @@ function getBotResponse(userMessage) {
 
 function sendChatMessage() {
     const message = chatInput.value.trim();
-    if (message && !isTyping) {
-        addMessage(message, true);
-        chatInput.value = '';
-        
-        // Simulate bot thinking
-        setTimeout(() => {
-            addTypingIndicator();
-            setTimeout(() => {
-                removeTypingIndicator();
-                const botResponse = getBotResponse(message);
-                addMessage(botResponse.message, false, botResponse.quickReplies);
-            }, 1000 + Math.random() * 1000);
-        }, 500);
+    
+    // Validate input
+    if (!message) {
+        return;
     }
+    
+    if (isTyping) {
+        return; // Prevent sending while bot is typing
+    }
+    
+    // Check for spam (same message repeated)
+    const lastMessage = conversationHistory[conversationHistory.length - 1];
+    if (lastMessage && lastMessage.message === message && !lastMessage.isUser) {
+        addMessage("I've already responded to that. Is there something else I can help you with?", false, ['Tell me about services', 'What are your prices?', 'Book consultation']);
+        return;
+    }
+    
+    // Add user message
+    addMessage(message, true);
+    chatInput.value = '';
+    
+    // Notify admin about new conversation
+    if (conversationHistory.length === 0) {
+        notifyAdmin('chatbot', 'New Chatbot Conversation', `User started a conversation with message: "${message}"`, {
+            userMessage: message,
+            timestamp: new Date().toISOString()
+        });
+    }
+    
+    // Disable input while bot is responding
+    chatInput.disabled = true;
+    sendMessage.disabled = true;
+    
+    // Simulate bot thinking
+    setTimeout(() => {
+        addTypingIndicator();
+        setTimeout(() => {
+            removeTypingIndicator();
+            const botResponse = getBotResponse(message);
+            addMessage(botResponse.message, false, botResponse.quickReplies);
+            
+            // Check if user wants to book appointment
+            if (message.toLowerCase().includes('book') || message.toLowerCase().includes('appointment') || message.toLowerCase().includes('consultation')) {
+                notifyAdmin('appointment', 'Appointment Request via Chatbot', `User requested appointment: "${message}"`, {
+                    userMessage: message,
+                    botResponse: botResponse.message,
+                    timestamp: new Date().toISOString()
+                });
+            }
+            
+            // Re-enable input
+            chatInput.disabled = false;
+            sendMessage.disabled = false;
+            chatInput.focus();
+        }, 1000 + Math.random() * 1000);
+    }, 500);
 }
 
 // Chatbot event listeners
-chatbotButton.addEventListener('click', toggleChat);
-closeChat.addEventListener('click', toggleChat);
+if (chatbotButton) {
+    chatbotButton.addEventListener('click', toggleChat);
+}
+if (closeChat) {
+    closeChat.addEventListener('click', toggleChat);
+}
 
-sendMessage.addEventListener('click', sendChatMessage);
-chatInput.addEventListener('keypress', (e) => {
-    if (e.key === 'Enter') {
-        sendChatMessage();
-    }
+if (sendMessage) {
+    sendMessage.addEventListener('click', sendChatMessage);
+}
+if (chatInput) {
+    chatInput.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') {
+            sendChatMessage();
+        }
+    });
+}
+
+// Add event listeners to initial quick reply buttons
+document.addEventListener('DOMContentLoaded', () => {
+    const initialQuickReplies = document.querySelectorAll('.quick-reply');
+    initialQuickReplies.forEach(button => {
+        button.addEventListener('click', (e) => {
+            e.preventDefault();
+            const reply = button.getAttribute('data-reply');
+            
+            // Disable all initial quick reply buttons
+            initialQuickReplies.forEach(btn => btn.disabled = true);
+            
+            addMessage(reply, true);
+            
+            setTimeout(() => {
+                const botResponse = getBotResponse(reply);
+                addTypingIndicator();
+                setTimeout(() => {
+                    removeTypingIndicator();
+                    addMessage(botResponse.message, false, botResponse.quickReplies);
+                }, 1000 + Math.random() * 1000);
+            }, 500);
+        });
+    });
 });
 
 // Portfolio filtering
@@ -316,8 +571,39 @@ filterButtons.forEach(button => {
     });
 });
 
+// Callback request functionality
+const callbackCheckbox = document.getElementById('callback-request');
+const preferredTimeGroup = document.getElementById('preferred-time-group');
+
+if (callbackCheckbox && preferredTimeGroup) {
+    callbackCheckbox.addEventListener('change', () => {
+        if (callbackCheckbox.checked) {
+            preferredTimeGroup.style.display = 'block';
+        } else {
+            preferredTimeGroup.style.display = 'none';
+        }
+    });
+}
+
+// WhatsApp notification function
+function sendWhatsAppNotification(message) {
+    const adminWhatsAppNumber = '+15551234567'; // Replace with your actual WhatsApp number
+    const encodedMessage = encodeURIComponent(message);
+    const whatsappUrl = `https://wa.me/${adminWhatsAppNumber}?text=${encodedMessage}`;
+    
+    // Open WhatsApp in new tab
+    window.open(whatsappUrl, '_blank');
+    
+    // Also notify admin panel
+    notifyAdmin('whatsapp', 'WhatsApp Notification Sent', message, {
+        timestamp: new Date().toISOString(),
+        type: 'callback_request'
+    });
+}
+
 // Contact form handling
-contactForm.addEventListener('submit', (e) => {
+if (contactForm) {
+    contactForm.addEventListener('submit', (e) => {
     e.preventDefault();
     
     const formData = new FormData(contactForm);
@@ -327,11 +613,49 @@ contactForm.addEventListener('submit', (e) => {
     const service = formData.get('service');
     const budget = formData.get('budget');
     const message = formData.get('message');
+    const callbackRequest = formData.get('callback-request') === 'on';
+    const preferredTime = formData.get('preferred-time');
     
     // Simple validation
     if (!name || !email || !service || !message) {
         showNotification('Please fill in all required fields.', 'error');
         return;
+    }
+    
+    // Check if callback is requested
+    if (callbackRequest) {
+        if (!phone) {
+            showNotification('Phone number is required for callback requests.', 'error');
+            return;
+        }
+        
+        // Send WhatsApp notification for callback request
+        const callbackMessage = `🔔 *NEW CALLBACK REQUEST*\n\n👤 *Name:* ${name}\n📞 *Phone:* ${phone}\n📧 *Email:* ${email}\n🏠 *Service:* ${service}\n💰 *Budget:* ${budget || 'Not specified'}\n⏰ *Preferred Time:* ${preferredTime || 'Not specified'}\n\n💬 *Message:* ${message}\n\nPlease call back within 24 hours!`;
+        
+        sendWhatsAppNotification(callbackMessage);
+        
+        // Notify admin about callback request
+        notifyAdmin('callback', 'New Callback Request', `Callback requested by ${name} for ${service}`, {
+            name: name,
+            email: email,
+            phone: phone,
+            service: service,
+            budget: budget,
+            message: message,
+            preferredTime: preferredTime,
+            timestamp: new Date().toISOString()
+        });
+    } else {
+        // Regular contact form submission
+        notifyAdmin('contact', 'New Contact Form Submission', `New inquiry from ${name} regarding ${service}`, {
+            name: name,
+            email: email,
+            phone: phone,
+            service: service,
+            budget: budget,
+            message: message,
+            timestamp: new Date().toISOString()
+        });
     }
     
     // Simulate form submission
@@ -342,12 +666,23 @@ contactForm.addEventListener('submit', (e) => {
     submitBtn.disabled = true;
     
     setTimeout(() => {
-        showNotification('Thank you for your message! We will get back to you within 24 hours.', 'success');
+        const successMessage = callbackRequest 
+            ? 'Thank you for your message! We will call you back within 24 hours. A WhatsApp notification has been sent to our team.'
+            : 'Thank you for your message! We will get back to you within 24 hours.';
+        
+        showNotification(successMessage, 'success');
         contactForm.reset();
+        
+        // Hide preferred time group after form reset
+        if (preferredTimeGroup) {
+            preferredTimeGroup.style.display = 'none';
+        }
+        
         submitBtn.textContent = originalText;
         submitBtn.disabled = false;
     }, 2000);
-});
+    });
+}
 
 // Notification system
 function showNotification(message, type = 'info') {
@@ -414,16 +749,74 @@ window.addEventListener('scroll', () => {
 const newsletterForm = document.querySelector('.newsletter-form');
 if (newsletterForm) {
     newsletterForm.addEventListener('submit', (e) => {
+        try {
         e.preventDefault();
         const email = newsletterForm.querySelector('input[type="email"]').value;
         
         if (email) {
             showNotification('Thank you for subscribing to our newsletter!', 'success');
             newsletterForm.reset();
+            
+            // Notify admin about newsletter subscription
+            notifyAdmin('system', 'Newsletter Subscription', `New newsletter subscription: ${email}`, {
+                email: email,
+                timestamp: new Date().toISOString()
+            });
         } else {
             showNotification('Please enter a valid email address.', 'error');
         }
+        } catch (error) {
+            console.error('Error in newsletter form:', error);
+            showNotification('An error occurred. Please try again.', 'error');
+        }
     });
+}
+
+// WhatsApp Integration
+function openWhatsApp(message = '') {
+    const phoneNumber = '+15551234567'; // Replace with actual WhatsApp number
+    const defaultMessage = 'Hi! I\'m interested in your interior design services. Can you help me?';
+    const whatsappMessage = message || defaultMessage;
+    const whatsappUrl = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(whatsappMessage)}`;
+    
+    // Notify admin about WhatsApp contact
+    notifyAdmin('contact', 'WhatsApp Contact', `User initiated WhatsApp contact with message: "${whatsappMessage}"`, {
+        message: whatsappMessage,
+        timestamp: new Date().toISOString()
+    });
+    
+    window.open(whatsappUrl, '_blank');
+}
+
+// Test notification function
+function testNotification() {
+    notifyAdmin('test', 'Test Notification from Main Site', 'This is a test notification triggered from the main website footer button.', {
+        source: 'main-website-test',
+        timestamp: new Date().toISOString()
+    });
+    
+    showNotification('Test notification sent to admin panel!', 'success');
+    console.log('Test notification sent from main website');
+}
+
+function testCallbackRequest() {
+    const testMessage = `🔔 *TEST CALLBACK REQUEST*\n\n👤 *Name:* Test User\n📞 *Phone:* +1 (555) 123-4567\n📧 *Email:* test@example.com\n🏠 *Service:* Residential Design\n💰 *Budget:* $10,000\n⏰ *Preferred Time:* Morning (9AM - 12PM)\n\n💬 *Message:* This is a test callback request to verify WhatsApp notification functionality.\n\nPlease call back within 24 hours!`;
+    
+    sendWhatsAppNotification(testMessage);
+    
+    notifyAdmin('callback', 'Test Callback Request', 'Test callback request triggered from main website', {
+        name: 'Test User',
+        email: 'test@example.com',
+        phone: '+1 (555) 123-4567',
+        service: 'Residential Design',
+        budget: '$10,000',
+        message: 'This is a test callback request to verify WhatsApp notification functionality.',
+        preferredTime: 'Morning (9AM - 12PM)',
+        timestamp: new Date().toISOString()
+    });
+    
+    showNotification('Test callback request sent! WhatsApp notification opened.', 'success');
+    console.log('Test callback request sent from main website');
 }
 
 // CTA button functionality
@@ -612,14 +1005,73 @@ function handleSwipe() {
 document.addEventListener('DOMContentLoaded', () => {
     console.log('Luxe Interiors website loaded successfully!');
     
+    // Initialize all DOM elements first
+    if (!initializeDOMElements()) {
+        console.error('Failed to initialize DOM elements');
+        return;
+    }
+    
+    // Setup all functionality
+    setupNavbarScroll();
+    setupMobileMenu();
+    setupNavLinks();
+    setupSmoothScrolling();
+    
+    // Setup callback request functionality
+    const callbackCheckbox = document.getElementById('callback-request');
+    const preferredTimeGroup = document.getElementById('preferred-time-group');
+    
+    if (callbackCheckbox && preferredTimeGroup) {
+        callbackCheckbox.addEventListener('change', () => {
+            try {
+                if (callbackCheckbox.checked) {
+                    preferredTimeGroup.style.display = 'block';
+                } else {
+                    preferredTimeGroup.style.display = 'none';
+                }
+            } catch (error) {
+                console.error('Error toggling preferred time group:', error);
+            }
+        });
+    }
+    
+    // Setup portfolio filtering
+    const filterButtons = document.querySelectorAll('.filter-btn');
+    const portfolioItems = document.querySelectorAll('.portfolio-item');
+    
+    filterButtons.forEach(button => {
+        button.addEventListener('click', () => {
+            try {
+                const filter = button.getAttribute('data-filter');
+                
+                // Update active button
+                filterButtons.forEach(btn => btn.classList.remove('active'));
+                button.classList.add('active');
+                
+                // Filter items
+                portfolioItems.forEach(item => {
+                    const categories = item.getAttribute('data-category');
+                    if (filter === 'all' || categories.includes(filter)) {
+                        item.style.display = 'block';
+                        item.style.animation = 'fadeInUp 0.6s ease';
+                    } else {
+                        item.style.display = 'none';
+                    }
+                });
+            } catch (error) {
+                console.error('Error in portfolio filtering:', error);
+            }
+        });
+    });
+    
     // Add some initial animations
     setTimeout(() => {
         document.body.classList.add('animate-in');
     }, 100);
     
-    // Add CSS for notifications
-    const notificationStyles = document.createElement('style');
-    notificationStyles.textContent = `
+    // Add CSS for notifications and chatbot improvements
+    const additionalStyles = document.createElement('style');
+    additionalStyles.textContent = `
         .notification {
             position: fixed;
             top: 20px;
@@ -699,7 +1151,59 @@ document.addEventListener('DOMContentLoaded', () => {
                 opacity: 1;
             }
         }
+        
+        .chatbot-messages {
+            scrollbar-width: thin;
+            scrollbar-color: var(--primary-gold) var(--beige-light);
+        }
+        
+        .chatbot-messages::-webkit-scrollbar {
+            width: 6px;
+        }
+        
+        .chatbot-messages::-webkit-scrollbar-track {
+            background: var(--beige-light);
+            border-radius: 3px;
+        }
+        
+        .chatbot-messages::-webkit-scrollbar-thumb {
+            background: var(--primary-gold);
+            border-radius: 3px;
+        }
+        
+        .chatbot-messages::-webkit-scrollbar-thumb:hover {
+            background: var(--secondary-gold);
+        }
+        
+        .message {
+            animation: messageSlideIn 0.3s ease;
+        }
+        
+        @keyframes messageSlideIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
     `;
-    document.head.appendChild(notificationStyles);
+    document.head.appendChild(additionalStyles);
+    
+    // Initialize chatbot with error handling
+    try {
+        // Check if chatbot elements exist
+        if (!chatbotButton || !chatbotBox || !chatbotMessages || !chatInput || !sendMessage) {
+            console.warn('Some chatbot elements are missing');
+        } else {
+            console.log('Chatbot initialized successfully');
+        }
+    } catch (error) {
+        console.error('Error initializing chatbot:', error);
+    }
+    
+    console.log('Website initialization completed successfully!');
 });
 
