@@ -87,7 +87,7 @@
                 <div class="collapse navbar-collapse" id="navbarCollapse">
                     <div class="navbar-nav ms-auto">
                         <a href="index.html" class="nav-item nav-link">Home</a>
-                        <a href="gallery.html" class="nav-item nav-link">Gallery</a>
+                        <a href="/about.html" class="nav-item nav-link">Gallery</a>
                         <a href="contact.html" class="nav-item nav-link active">Contact</a>
                     </div>
                 </div>
@@ -178,31 +178,29 @@
                 </div>
                 <div class="col-md-6 col-lg-3">
                     <h5 class="text-white mb-4">Get In Touch</h5>
-                    <p><i class="fa fa-map-marker-alt me-3"></i>123 Street, New York, USA</p>
-                    <p><i class="fa fa-phone-alt me-3"></i>+012 345 67890</p>
-                    <p><i class="fa fa-envelope me-3"></i>info@example.com</p>
+                    <p><i class="fa fa-map-marker-alt me-3"></i>Bollineni Bion Block - D</p>
+                    <p><i class="fa fa-phone-alt me-3"></i>+91 9866910606</p>
+                    <p><i class="fa fa-envelope me-3"></i>vkrinteriors.515@gmail.com    </p>
                     <div class="d-flex pt-2">
-                        <a class="btn btn-outline-primary btn-square border-2 me-2" href="#"><i
-                                class="fab fa-twitter"></i></a>
-                        <a class="btn btn-outline-primary btn-square border-2 me-2" href="#"><i
-                                class="fab fa-facebook-f"></i></a>
-                        <a class="btn btn-outline-primary btn-square border-2 me-2" href="#"><i
+
+
+
+                        <a class="btn btn-outline-primary btn-square border-2 me-2" href="https://youtube.com/@vkrinteriors?si=b8pSjUwJuHb84a3M"><i
                                 class="fab fa-youtube"></i></a>
-                        <a class="btn btn-outline-primary btn-square border-2 me-2" href="#"><i
+                        <a class="btn btn-outline-primary btn-square border-2 me-2" href="https://www.instagram.com/vkrinteriors.515?igsh=Y3Q0eDlvdGxnYnR1"><i
                                 class="fab fa-instagram"></i></a>
-                        <a class="btn btn-outline-primary btn-square border-2 me-2" href="#"><i
-                                class="fab fa-linkedin-in"></i></a>
+                        
                     </div>
                 </div>
-                <div class="col-md-6 col-lg-3">
+                <!-- <div class="col-md-6 col-lg-3">
                     <h5 class="text-white mb-4">Popular Links</h5>
                     <a class="btn btn-link" href="#">About Us</a>
                     <a class="btn btn-link" href="#">Contact Us</a>
                     <a class="btn btn-link" href="#">Privacy Policy</a>
                     <a class="btn btn-link" href="#">Terms & Conditions</a>
                     <a class="btn btn-link" href="#">Career</a>
-                </div>
-                <div class="col-md-6 col-lg-3">
+                </div> -->
+                <!-- <div class="col-md-6 col-lg-3">
                     <h5 class="text-white mb-4">Our Services</h5>
                     <a class="btn btn-link" href="#">Interior Design</a>
                     <a class="btn btn-link" href="#">Project Planning</a>
@@ -210,7 +208,7 @@
                     <a class="btn btn-link" href="#">Implementation</a>
                     <a class="btn btn-link" href="#">Landscape Design</a>
                 </div>
-            </div>
+            </div> -->
         </div>
     </div>
 
@@ -227,7 +225,13 @@
     <!-- Custom JS -->
     <script>
         new WOW().init();
-
+window.addEventListener('load', function() {
+        const spinner = document.getElementById('spinner');
+        if (spinner) {
+            spinner.classList.remove('show'); // remove the class to hide spinner
+            spinner.style.display = 'none'; // ensure it's hidden
+        }
+    });
         // Navbar scroll effect
         window.addEventListener('scroll', function () {
             let navbar = document.querySelector('.navbar');
